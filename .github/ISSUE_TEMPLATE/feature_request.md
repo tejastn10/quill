@@ -25,15 +25,15 @@ Clearly state the primary objective of the task/feature. Define the expected out
 
 **1. [High-Level Task Title 1]**
 
-- [ ] **[Subtask 1]**: Brief description of the subtask.  
-- [ ] **[Subtask 2]**: Brief description of the subtask.  
-- [ ] **[Subtask 3]**: Brief description of the subtask.  
+- [ ] **[Subtask 1]**: Brief description of the subtask.
+- [ ] **[Subtask 2]**: Brief description of the subtask.
+- [ ] **[Subtask 3]**: Brief description of the subtask.
 
 **2. [High-Level Task Title 2]**
 
-- [ ] **[Subtask 1]**: Brief description of the subtask.  
-- [ ] **[Subtask 2]**: Brief description of the subtask.  
-- [ ] **[Subtask 3]**: Brief description of the subtask.  
+- [ ] **[Subtask 1]**: Brief description of the subtask.
+- [ ] **[Subtask 2]**: Brief description of the subtask.
+- [ ] **[Subtask 3]**: Brief description of the subtask.
 
 ---
 
