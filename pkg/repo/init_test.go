@@ -1,4 +1,4 @@
-package main
+package repo
 
 import (
 	"os"
@@ -10,7 +10,7 @@ func TestCreateQuillRepository(t *testing.T) {
 	// Creating a temporary directory for testing
 	testDir := t.TempDir()
 
-	err := createQuillRepository(testDir)
+	err := CreateQuillRepository(testDir)
 	if err != nil {
 		t.Fatalf("Failed to create Quill repository: %v", err)
 	}
@@ -34,7 +34,7 @@ func TestCheckQuillExists(t *testing.T) {
 	tempDir := t.TempDir()
 
 	// Testing if .quill does not exist
-	exists := checkQuillExists(tempDir)
+	exists := CheckQuillExists(tempDir)
 	if exists {
 		t.Errorf("Expected checkQuillExists to return false, but it returned true")
 	}
@@ -47,7 +47,7 @@ func TestCheckQuillExists(t *testing.T) {
 	}
 
 	// Testing if .quill exists
-	exists = checkQuillExists(tempDir)
+	exists = CheckQuillExists(tempDir)
 	if !exists {
 		t.Errorf("Expected checkQuillExists to return true, but it returned false")
 	}
@@ -65,7 +65,7 @@ func TestCreateQuillRepositoryFailsIfAlreadyExists(t *testing.T) {
 	}
 
 	// Trying to initialize again, which should not overwrite
-	err = createQuillRepository(tempDir)
+	err = CreateQuillRepository(tempDir)
 	if err != nil {
 		t.Errorf("Expected no error, but got: %v", err)
 	}
