@@ -90,15 +90,16 @@ Example Workflow
 
 ```md
 quill/
-├── cmd/            # CLI commands
-├── pkg/            # Core functionality (objects, refs, index, storage)
+├── cmd/            # CLI commands (user-facing commands like init, add, commit, etc.)
+├── pkg/            # Core functionality
 │   ├── objects/    # Blob, tree, commit handling
 │   ├── refs/       # Branch and HEAD management
 │   ├── index/      # Staging area implementation
-│   └── storage/    # File I/O operations
-├── internal/       # Utilities and helpers
+│   ├── storage/    # Low-level File I/O operations
+│   └── hash/       # Hashing algorithms and utilities
+├── internal/       # Internal utilities and helpers (e.g., logging, config)
 ├── .gitignore      # Ignore build artifacts
-├── main.go         # Entry point
+├── main.go         # Entry point for the CLI application
 └── README.md       # Documentation
 ```
 
