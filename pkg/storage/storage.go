@@ -32,3 +32,9 @@ func CreateObject(repoPath string, hash string, data []byte) error {
 
 	return nil
 }
+
+func ObjectExists(repoPath string, hash string) bool {
+	objectPath := filepath.Join(repoPath, ".quill", "objects", hash[:2], hash[2:])
+	_, err := os.Stat(objectPath)
+	return err == nil
+}
