@@ -16,7 +16,7 @@ func CreateBlob(repoPath string, filePath string) (string, error) {
 	}
 
 	// Generating a hash for the file contents
-	blobHash := hash.ComputeSHA1(data)
+	blobHash := hash.ComputeSHA256(data)
 
 	// Storing the object in .quill/objects
 	err = storage.CreateObject(repoPath, blobHash, data)
