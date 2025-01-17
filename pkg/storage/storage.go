@@ -19,13 +19,13 @@ func CreateObject(repoPath string, hash string, data []byte) error {
 	}
 
 	// Creating the subdirectory if it doesn't exist
-	err = os.Mkdir(objectDir, os.ModePerm)
+	err = os.Mkdir(objectDir, 0750) // Secure directory permissions
 	if err != nil {
 		return fmt.Errorf("failed to create object directory: %v", err)
 	}
 
 	// Writing the blob
-	err = os.WriteFile(objectPath, data, 0644)
+	err = os.WriteFile(objectPath, data, 0600) // Secure file permissions
 	if err != nil {
 		return fmt.Errorf("failed to write object: %v", err)
 	}
