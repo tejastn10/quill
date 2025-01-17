@@ -34,7 +34,7 @@ func TestCreateBlob(t *testing.T) {
 		}
 
 		// Verify the hash matches the file content
-		expectedHash := hash.ComputeSHA1(testData)
+		expectedHash := hash.ComputeSHA256(testData)
 		if blobHash != expectedHash {
 			t.Errorf("Blob hash mismatch: got %s, want %s", blobHash, expectedHash)
 		}
