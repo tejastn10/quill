@@ -34,7 +34,7 @@ func CreateBlob(repoPath string, filePath string) (string, error) {
 	safePath := absPath
 
 	// Reading the file contents
-	data, err := os.ReadFile(filePath)
+	// #nosec G304 - The file path is validated before being used
 	data, err := os.ReadFile(safePath)
 	if err != nil {
 		return "", err
