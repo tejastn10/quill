@@ -92,11 +92,12 @@ Example Workflow
 quill/
 ├── cmd/            # CLI commands (user-facing commands like init, add, commit, etc.)
 ├── pkg/            # Core functionality
+│   ├── hash/       # Hashing algorithms and utilities
 │   ├── objects/    # Blob, tree, commit handling
 │   ├── refs/       # Branch and HEAD management
+│   ├── repo/       # Initialization of .quill directory
 │   ├── index/      # Staging area implementation
-│   ├── storage/    # Low-level File I/O operations
-│   └── hash/       # Hashing algorithms and utilities
+│   └── storage/    # Low-level File I/O operations
 ├── internal/       # Internal utilities and helpers (e.g., logging, config)
 ├── .gitignore      # Ignore build artifacts
 ├── main.go         # Entry point for the CLI application
