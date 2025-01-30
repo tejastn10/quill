@@ -93,7 +93,13 @@ func TestFindRepoRoot(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to change working directory: %v", err)
 	}
-	defer os.Chdir(baseDir) // Restore original working directory
+
+	// Restore original working directory in defer
+	defer func() {
+		if err := os.Chdir(baseDir); err != nil {
+			t.Errorf("Failed to restore original working directory: %v", err)
+		}
+	}()
 
 	// Initially, there should be no repository
 	_, err = FindRepoRoot()
