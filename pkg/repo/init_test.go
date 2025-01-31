@@ -70,3 +70,63 @@ func TestCreateQuillRepositoryFailsIfAlreadyExists(t *testing.T) {
 		t.Errorf("Expected no error, but got: %v", err)
 	}
 }
+
+func TestFindRepoRoot(t *testing.T) {
+	// Creating a temporary base directory
+	baseDir := t.TempDir()
+
+	// Resolve symlinks to get the actual path (important for macOS)
+	baseDir, err := filepath.EvalSymlinks(baseDir)
+	if err != nil {
+		t.Fatalf("Failed to resolve symlinks for baseDir: %v", err)
+	}
+
+	// Creating a nested directory structure
+	nestedDir := filepath.Join(baseDir, "nested", "deep")
+	err = os.MkdirAll(nestedDir, 0750)
+	if err != nil {
+		t.Fatalf("Failed to create nested directories: %v", err)
+	}
+
+	// Change the working directory to the nested directory
+	err = os.Chdir(nestedDir)
+	if err != nil {
+		t.Fatalf("Failed to change working directory: %v", err)
+	}
+
+	// Restore original working directory in defer
+	defer func() {
+		if err := os.Chdir(baseDir); err != nil {
+			t.Errorf("Failed to restore original working directory: %v", err)
+		}
+	}()
+
+	// Initially, there should be no repository
+	_, err = FindRepoRoot()
+	if err == nil {
+		t.Errorf("Expected error when no .quill directory exists, but got none")
+	}
+
+	// Create a .quill directory in the base directory
+	quillDir := filepath.Join(baseDir, ".quill")
+	err = os.Mkdir(quillDir, 0750)
+	if err != nil {
+		t.Fatalf("Failed to create .quill directory: %v", err)
+	}
+
+	// Now FindRepoRoot should find the baseDir
+	repoRoot, err := FindRepoRoot()
+	if err != nil {
+		t.Errorf("Unexpected error finding repo root: %v", err)
+	}
+
+	// Resolve symlinks before comparison
+	repoRoot, err = filepath.EvalSymlinks(repoRoot)
+	if err != nil {
+		t.Fatalf("Failed to resolve symlinks for repoRoot: %v", err)
+	}
+
+	if repoRoot != baseDir {
+		t.Errorf("Expected repo root to be %s, but got %s", baseDir, repoRoot)
+	}
+}
