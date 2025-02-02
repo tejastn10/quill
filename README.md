@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" alt="Logo">
+</p>
+
 # Quill ✒️
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/tejastn10/quill?logo=go)
@@ -5,7 +9,7 @@
 [![Security Audit](https://github.com/tejastn10/quill/actions/workflows/security-audit.yml/badge.svg?logo=github)](https://github.com/tejastn10/quill/actions/workflows/security-audit.yml)
 ![License](https://img.shields.io/badge/License-MIT-yellow?logo=open-source-initiative&logoColor=white)
 
-Quill is a lightweight Git clone built from scratch to understand the inner workings of Git. It allows you to explore how Git handles version control, including file diffs, staging, commits, and object storage. Designed with precision and simplicity in mind.
+**Quill** is a lightweight Git clone built from scratch to understand the inner workings of Git. It allows you to explore how Git handles version control, including file diffs, staging, commits, and object storage. Designed with precision and simplicity in mind.
 
 ---
 
