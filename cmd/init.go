@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 
@@ -31,6 +32,23 @@ var initCmd = &cobra.Command{
 		err = repo.CreateQuillRepository(workingDir)
 		if err != nil {
 			fmt.Println("Error: Failed to initialize repository:", err)
+			return
+		}
+
+		// Ask for user details
+		reader := bufio.NewReader(os.Stdin)
+		fmt.Print("Enter your name: ")
+		name, _ := reader.ReadString('\n')
+		name = name[:len(name)-1] // Remove the newline character
+
+		fmt.Print("Enter your email: ")
+		email, _ := reader.ReadString('\n')
+		email = email[:len(email)-1] // Remove the newline character
+
+		// Create user config file
+		err = repo.CreateUserConfig(name, email)
+		if err != nil {
+			fmt.Println("Error: Failed to create user config file:", err)
 			return
 		}
 
