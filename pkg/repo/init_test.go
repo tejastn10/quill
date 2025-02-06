@@ -130,3 +130,40 @@ func TestFindRepoRoot(t *testing.T) {
 		t.Errorf("Expected repo root to be %s, but got %s", baseDir, repoRoot)
 	}
 }
+
+func TestCreateUserConfig(t *testing.T) {
+	// Create a temporary directory using t.TempDir()
+	tempDir := t.TempDir()
+
+	// Change the working directory to the temporary directory
+	originalDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Failed to get current working directory: %v", err)
+	}
+	defer os.Chdir(originalDir) // Restore the original working directory after the test
+
+	err = os.Chdir(tempDir)
+	if err != nil {
+		t.Fatalf("Failed to change working directory: %v", err)
+	}
+
+	// Call the function with test data
+	name := "Test User"
+	email := "test@example.com"
+	err = CreateUserConfig(name, email)
+	if err != nil {
+		t.Fatalf("CreateUserConfig returned an error: %v", err)
+	}
+
+	// Verify the user config file was created with the correct content
+	userConfigFile := filepath.Join(tempDir, ".quill", "config", "user")
+	content, err := os.ReadFile(userConfigFile)
+	if err != nil {
+		t.Fatalf("Failed to read user config file: %v", err)
+	}
+
+	expectedContent := "name=Test User\nemail=test@example.com\n"
+	if string(content) != expectedContent {
+		t.Errorf("User config file content mismatch. Expected:\n%s\nGot:\n%s", expectedContent, string(content))
+	}
+}
