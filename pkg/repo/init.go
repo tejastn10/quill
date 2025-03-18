@@ -104,3 +104,12 @@ func CreateUserConfig(name string, email string) error {
 
 	return nil
 }
+
+// CleanupRepository removes the .quill directory if an error occurs
+func CleanupRepository(repoPath string, err *error) {
+	if *err != nil {
+		quillPath := filepath.Join(repoPath, ".quill")
+		fmt.Println("Rolling back: Removing partially created repository...")
+		_ = os.RemoveAll(quillPath)
+	}
+}
