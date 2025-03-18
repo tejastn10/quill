@@ -8,12 +8,12 @@ import (
 	"strings"
 )
 
+// CreateQuillRepository initializes a new Quill repository by creating a .quill directory structure with objects and config subdirectories
 func CreateQuillRepository(path string) error {
 	// Defining the Quill directory structure
 	directories := []string{
 		filepath.Join(path, ".quill"),
 		filepath.Join(path, ".quill", "objects"),
-		filepath.Join(path, ".quill", "refs"),
 		filepath.Join(path, ".quill", "config"),
 	}
 
@@ -28,6 +28,7 @@ func CreateQuillRepository(path string) error {
 	return nil
 }
 
+// CheckQuillExists checks if a Quill repository exists at the specified path by verifying the presence of a .quill directory
 func CheckQuillExists(path string) bool {
 	quillPath := filepath.Join(path, ".quill")
 	_, err := os.Stat(quillPath)
