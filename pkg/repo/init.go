@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 // CreateQuillRepository initializes a new Quill repository by creating a .quill directory structure with objects and config subdirectories
@@ -58,52 +57,6 @@ func FindRepoRoot() (string, error) {
 	}
 
 	return "", errors.New("not a quill repository (or any of the parent directories): .quill")
-}
-
-func CreateUserConfig(name string, email string) error {
-	// Get the current working Directory
-	workingDir, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("unable to get the current working directory: %w", err)
-	}
-
-	// Define and sanitize the config directory path
-	userConfigDir := filepath.Join(workingDir, ".quill", "config")
-	userConfigDir = filepath.Clean(userConfigDir)
-
-	// Ensure the config directory is inside workingDir
-	if !strings.HasPrefix(userConfigDir, workingDir) {
-		return fmt.Errorf("invalid user config directory path: %s", userConfigDir)
-	}
-
-	// Create user config directory
-	err = os.MkdirAll(userConfigDir, 0750)
-	if err != nil {
-		return fmt.Errorf("failed to create config directory: %w", err)
-	}
-
-	// Define and sanitize the user config file path
-	userConfigFile := filepath.Join(userConfigDir, "user")
-	userConfigFile = filepath.Clean(userConfigFile)
-
-	// Ensure the config file is inside the expected directory
-	if !strings.HasPrefix(userConfigFile, userConfigDir) {
-		return fmt.Errorf("invalid user config file path: %s", userConfigFile)
-	}
-
-	// Create and write to the file with explicit permissions
-	file, err := os.OpenFile(userConfigFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
-	if err != nil {
-		return fmt.Errorf("failed to create user config file: %w", err)
-	}
-	defer file.Close()
-
-	_, err = file.WriteString(fmt.Sprintf("name=%s\nemail=%s\n", name, email))
-	if err != nil {
-		return fmt.Errorf("failed to write user config file: %w", err)
-	}
-
-	return nil
 }
 
 // CleanupRepository removes the .quill directory if an error occurs
