@@ -8,18 +8,21 @@ import (
 	"strings"
 
 	"github.com/tejastn10/quill/pkg/hash"
+	"github.com/tejastn10/quill/pkg/storage"
 )
 
 // IndexEntry represents a single entry in the index file.
 type IndexEntry struct {
-	Path string `json:"path"`
-	Hash string `json:"hash"`
-	Mode string `json:"mode"`
+	Path   string `json:"path"`
+	Hash   string `json:"hash"`
+	Mode   string `json:"mode"`
+	Staged bool   `json:"staged,omitempty"`
 }
 
 // Index represents the staging area.
 type Index struct {
-	Entries map[string]IndexEntry `json:"entries"`
+	Entries        map[string]IndexEntry `json:"entries"`
+	LastCommitTree string                `json:"lastCommitTree,omitempty"`
 }
 
 // LoadIndex loads the index from the .quill/index file.
@@ -81,39 +84,85 @@ func (idx *Index) SaveIndex(repoPath string) error {
 	return nil
 }
 
-// AddFile adds a single file to the index.
+// AddFile adds a file to the index with its current hash
 func (idx *Index) AddFile(repoPath, filePath string) error {
-	// Compute the absolute path and ensure it's within the repo
-	absPath, err := filepath.Abs(filePath)
+	// Get file info
+	info, err := os.Stat(filePath)
 	if err != nil {
-		return fmt.Errorf("failed to resolve absolute path for %q: %w", filePath, err)
-	}
-	absPath = filepath.Clean(absPath)
-
-	// Ensure the file is inside the repository
-	if !strings.HasPrefix(absPath, filepath.Clean(repoPath)+string(os.PathSeparator)) {
-		return fmt.Errorf("file path %q is outside the repository", filePath)
+		return fmt.Errorf("failed to stat file %q: %w", filePath, err)
 	}
 
-	// Compute the hash of the file's contents.
-	data, err := os.ReadFile(absPath)
-	if err != nil {
-		return fmt.Errorf("failed to read file: %w", err)
+	// Check if it's a regular file
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("%q is not a regular file", filePath)
 	}
+
+	// Read file content
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to read file %q: %w", filePath, err)
+	}
+
+	// Compute hash
 	fileHash := hash.ComputeSHA256(data)
 
-	// Compute the relative path for the file.
-	relPath, err := filepath.Rel(repoPath, absPath)
-	if err != nil || strings.HasPrefix(relPath, "..") {
-		return fmt.Errorf("file path %q is outside the repository", filePath)
+	// Get relative path for storage
+	relPath, err := filepath.Rel(repoPath, filePath)
+	if err != nil {
+		return fmt.Errorf("failed to get relative path for %q: %w", filePath, err)
 	}
 
-	// Normalize the path and add to the index.
-	relPath = filepath.ToSlash(relPath)
-	idx.Entries[relPath] = IndexEntry{
-		Path: relPath,
-		Hash: fileHash,
-		Mode: "100644", // Default mode for regular files.
+	// Check if file has changed since last commit
+	currentEntry, exists := idx.Entries[relPath]
+	if exists && currentEntry.Hash == fileHash && !currentEntry.Staged {
+		// File hasn't changed, no need to add it again
+		fmt.Printf("File %q unchanged, not adding to staging area\n", relPath)
+		return nil
 	}
+
+	// Store the object
+	err = storage.CreateObject(repoPath, fileHash, data)
+	if err != nil {
+		return fmt.Errorf("failed to store object for %q: %w", filePath, err)
+	}
+
+	// Add to index
+	mode := fmt.Sprintf("%o", info.Mode().Perm())
+	idx.Entries[relPath] = IndexEntry{
+		Path:   relPath,
+		Hash:   fileHash,
+		Mode:   mode,
+		Staged: true, // Mark as staged
+	}
+
+	fmt.Printf("Added %q to staging area\n", relPath)
 	return nil
+}
+
+// CreateCleanIndex creates a clean index after commit, marking all files as committed
+func CreateCleanIndex(repoPath, treeHash string) error {
+	// Load the current index
+	idx, err := LoadIndex(repoPath)
+	if err != nil {
+		return fmt.Errorf("failed to load index: %w", err)
+	}
+
+	// Store the tree hash for comparison in future operations
+	// This helps track which files have changed since the last commit
+	idx.LastCommitTree = treeHash
+
+	// You might want to keep the entries but mark them as committed
+	// or completely clear them depending on your design choice
+
+	// Option 1: Clear all entries (Git-like behavior)
+	// idx.Entries = make(map[string]IndexEntry)
+
+	// Option 2: Keep entries but mark them as committed (useful for status command)
+	for path, entry := range idx.Entries {
+		entry.Staged = false // Add this field to your IndexEntry struct
+		idx.Entries[path] = entry
+	}
+
+	// Save the updated index
+	return idx.SaveIndex(repoPath)
 }
