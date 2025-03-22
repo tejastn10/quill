@@ -16,8 +16,13 @@ func GetHEAD(repoPath string) (string, error) {
 		return "", nil // No commits yet
 	}
 
+	cleanPath := filepath.Clean(headPath)
+
+	if !IsPathSafe(cleanPath) {
+		return "", fmt.Errorf("invalid file path: potential directory traversal attempt")
+	}
 	// Read HEAD
-	data, err := os.ReadFile(headPath)
+	data, err := os.ReadFile(cleanPath)
 	if err != nil {
 		return "", fmt.Errorf("failed to read HEAD: %w", err)
 	}
