@@ -23,7 +23,10 @@ func TestGetHEAD(t *testing.T) {
 			name: "HEAD does not exist",
 			setup: func() {
 				// Ensure .quill directory exists, but no HEAD file
-				os.MkdirAll(filepath.Join(tempDir, ".quill"), os.ModePerm)
+				err := os.MkdirAll(filepath.Join(tempDir, ".quill"), os.ModePerm)
+				if err != nil {
+					t.Fatalf("Failed to create .quill directory: %v", err)
+				}
 			},
 			want:        "",
 			expectError: false,
@@ -44,7 +47,10 @@ func TestGetHEAD(t *testing.T) {
 			}
 
 			// Cleanup permission changes
-			os.Chmod(headPath, constants.ConfigFilePerms)
+			err = os.Chmod(headPath, constants.ConfigFilePerms)
+			if err != nil {
+				t.Fatalf("Failed to reset permissions on HEAD file: %v", err)
+			}
 		})
 	}
 }
