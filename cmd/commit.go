@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 	"github.com/tejastn10/quill/pkg/index"
@@ -72,5 +73,10 @@ var commitCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(commitCmd)
 	commitCmd.Flags().StringP("message", "m", "", "Commit message")
-	commitCmd.MarkFlagRequired("message")
+	err := commitCmd.MarkFlagRequired("message")
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error marking flag as required: %v\n", err)
+		os.Exit(1)
+	}
 }
