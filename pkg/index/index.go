@@ -7,7 +7,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/tejastn10/quill/pkg/constants"
 	"github.com/tejastn10/quill/pkg/hash"
+	"github.com/tejastn10/quill/pkg/repo"
 	"github.com/tejastn10/quill/pkg/storage"
 )
 
@@ -59,7 +61,7 @@ func (idx *Index) SaveIndex(repoPath string) error {
 	indexPath = filepath.Clean(indexPath)
 
 	// Ensure the .quill directory exists.
-	err := os.MkdirAll(filepath.Dir(indexPath), 0750)
+	err := os.MkdirAll(filepath.Dir(indexPath), constants.DirectoryPerms)
 	if err != nil {
 		return fmt.Errorf("failed to create directory for index: %w", err)
 	}
@@ -70,7 +72,7 @@ func (idx *Index) SaveIndex(repoPath string) error {
 	}
 
 	// Write the index to the file safely
-	file, err := os.OpenFile(indexPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	file, err := os.OpenFile(indexPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, constants.ConfigFilePerms)
 	if err != nil {
 		return fmt.Errorf("failed to create index file: %w", err)
 	}
@@ -97,8 +99,14 @@ func (idx *Index) AddFile(repoPath, filePath string) error {
 		return fmt.Errorf("%q is not a regular file", filePath)
 	}
 
+	cleanPath := filepath.Clean(filePath)
+
+	if !repo.IsPathSafe(cleanPath) {
+		return fmt.Errorf("invalid file path: potential directory traversal attempt")
+	}
+
 	// Read file content
-	data, err := os.ReadFile(filePath)
+	data, err := os.ReadFile(cleanPath)
 	if err != nil {
 		return fmt.Errorf("failed to read file %q: %w", filePath, err)
 	}
