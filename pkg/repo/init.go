@@ -14,8 +14,8 @@ func CreateQuillRepository(path string) error {
 	// Defining the Quill directory structure
 	directories := []string{
 		filepath.Join(path, ".quill"),
-		filepath.Join(path, ".quill", "objects"),
 		filepath.Join(path, ".quill", "config"),
+		filepath.Join(path, ".quill", "objects"),
 	}
 
 	// Creating directories
