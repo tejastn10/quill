@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+
+	"github.com/tejastn10/quill/pkg/constants"
 )
 
 // CreateUserConfig creates the user's config when quill is initialized
@@ -31,7 +33,7 @@ func CreateUserConfig(name string, email string) error {
 	}
 
 	// Create user config directory
-	err = os.MkdirAll(userConfigDir, 0750)
+	err = os.MkdirAll(userConfigDir, constants.DirectoryPerms)
 	if err != nil {
 		return fmt.Errorf("failed to create config directory: %w", err)
 	}
@@ -46,7 +48,7 @@ func CreateUserConfig(name string, email string) error {
 	}
 
 	// Create and write to the file with explicit permissions
-	file, err := os.OpenFile(userConfigFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0600)
+	file, err := os.OpenFile(userConfigFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, constants.ConfigFilePerms)
 	if err != nil {
 		return fmt.Errorf("failed to create user config file: %w", err)
 	}
@@ -64,7 +66,13 @@ func CreateUserConfig(name string, email string) error {
 func ReadUserConfig(repoPath string) (string, string, error) {
 	configPath := filepath.Join(repoPath, ".quill", "config", "user")
 
-	file, err := os.Open(configPath)
+	cleanPath := filepath.Clean(configPath)
+
+	if !IsPathSafe(cleanPath) {
+		return "", "", fmt.Errorf("invalid file path: potential directory traversal attempt")
+	}
+
+	file, err := os.Open(cleanPath)
 	if err != nil {
 		return "", "", fmt.Errorf("failed to open user config: %w", err)
 	}
