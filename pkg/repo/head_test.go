@@ -4,14 +4,11 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
-
-	"github.com/tejastn10/quill/pkg/constants"
 )
 
 func TestGetHEAD(t *testing.T) {
 	// Create a temporary repository
 	tempDir := t.TempDir()
-	headPath := filepath.Join(tempDir, ".quill", "HEAD")
 
 	tests := []struct {
 		name        string
@@ -44,12 +41,6 @@ func TestGetHEAD(t *testing.T) {
 
 			if got != tt.want {
 				t.Errorf("GetHEAD() = %q, want %q", got, tt.want)
-			}
-
-			// Cleanup permission changes
-			err = os.Chmod(headPath, constants.ConfigFilePerms)
-			if err != nil {
-				t.Fatalf("Failed to reset permissions on HEAD file: %v", err)
 			}
 		})
 	}
