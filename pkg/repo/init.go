@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/tejastn10/quill/pkg/constants"
 )
 
 // CreateQuillRepository initializes a new Quill repository by creating a .quill directory structure with objects and config subdirectories
@@ -18,7 +20,7 @@ func CreateQuillRepository(path string) error {
 
 	// Creating directories
 	for _, dir := range directories {
-		err := os.MkdirAll(dir, 0750)
+		err := os.MkdirAll(dir, constants.DirectoryPerms)
 		if err != nil {
 			return fmt.Errorf("failed to create the directory %s: %w", dir, err)
 		}
