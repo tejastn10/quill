@@ -159,13 +159,7 @@ func CreateCleanIndex(repoPath, treeHash string) error {
 	// This helps track which files have changed since the last commit
 	idx.LastCommitTree = treeHash
 
-	// You might want to keep the entries but mark them as committed
-	// or completely clear them depending on your design choice
-
-	// Option 1: Clear all entries (Git-like behavior)
-	// idx.Entries = make(map[string]IndexEntry)
-
-	// Option 2: Keep entries but mark them as committed (useful for status command)
+	// Keep entries but mark them as committed (useful for status command)
 	for path, entry := range idx.Entries {
 		entry.Staged = false // Add this field to your IndexEntry struct
 		idx.Entries[path] = entry
