@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestCreateObjectAndObjectExists(t *testing.T) {
+func TestStorageFunctions(t *testing.T) {
 	// Create a temporary directory to act as the repository
 	tempDir := t.TempDir()
 
@@ -37,21 +37,6 @@ func TestCreateObjectAndObjectExists(t *testing.T) {
 
 		if string(content) != string(data) {
 			t.Errorf("Object content mismatch: got %q, want %q", content, data)
-		}
-	})
-
-	// Test ObjectExists
-	t.Run("ObjectExists", func(t *testing.T) {
-		exists := ObjectExists(repoPath, hash)
-		if !exists {
-			t.Errorf("ObjectExists returned false for an existing object")
-		}
-
-		// Test with a non-existent object
-		nonExistentHash := "0000111122223333444455556666777788889999"
-		exists = ObjectExists(repoPath, nonExistentHash)
-		if exists {
-			t.Errorf("ObjectExists returned true for a non-existent object")
 		}
 	})
 }

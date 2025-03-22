@@ -5,20 +5,22 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/tejastn10/quill/pkg/constants"
 )
 
+// CreateQuillRepository initializes a new Quill repository by creating a .quill directory structure with objects and config subdirectories
 func CreateQuillRepository(path string) error {
 	// Defining the Quill directory structure
 	directories := []string{
 		filepath.Join(path, ".quill"),
-		filepath.Join(path, ".quill", "objects"),
-		filepath.Join(path, ".quill", "refs"),
 		filepath.Join(path, ".quill", "config"),
+		filepath.Join(path, ".quill", "objects"),
 	}
 
 	// Creating directories
 	for _, dir := range directories {
-		err := os.MkdirAll(dir, 0750)
+		err := os.MkdirAll(dir, constants.DirectoryPerms)
 		if err != nil {
 			return fmt.Errorf("failed to create the directory %s: %w", dir, err)
 		}
@@ -27,6 +29,7 @@ func CreateQuillRepository(path string) error {
 	return nil
 }
 
+// CheckQuillExists checks if a Quill repository exists at the specified path by verifying the presence of a .quill directory
 func CheckQuillExists(path string) bool {
 	quillPath := filepath.Join(path, ".quill")
 	_, err := os.Stat(quillPath)
@@ -56,4 +59,13 @@ func FindRepoRoot() (string, error) {
 	}
 
 	return "", errors.New("not a quill repository (or any of the parent directories): .quill")
+}
+
+// CleanupRepository removes the .quill directory if an error occurs
+func CleanupRepository(repoPath string, err *error) {
+	if *err != nil {
+		quillPath := filepath.Join(repoPath, ".quill")
+		fmt.Println("Rolling back: Removing partially created repository...")
+		_ = os.RemoveAll(quillPath)
+	}
 }

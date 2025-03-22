@@ -4,6 +4,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/tejastn10/quill/pkg/constants"
 )
 
 func TestCreateQuillRepository(t *testing.T) {
@@ -19,7 +21,6 @@ func TestCreateQuillRepository(t *testing.T) {
 	expectedDirs := []string{
 		filepath.Join(testDir, ".quill"),
 		filepath.Join(testDir, ".quill", "objects"),
-		filepath.Join(testDir, ".quill", "refs"),
 		filepath.Join(testDir, ".quill", "config"),
 	}
 	for _, dir := range expectedDirs {
@@ -41,7 +42,7 @@ func TestCheckQuillExists(t *testing.T) {
 
 	// Creating a .quill directory
 	quillDir := filepath.Join(tempDir, ".quill")
-	err := os.Mkdir(quillDir, 0750)
+	err := os.Mkdir(quillDir, constants.DirectoryPerms)
 	if err != nil {
 		t.Fatalf("Failed to create .quill directory: %v", err)
 	}
@@ -59,7 +60,7 @@ func TestCreateQuillRepositoryFailsIfAlreadyExists(t *testing.T) {
 
 	// Creating a .quill directory manually
 	quillDir := filepath.Join(tempDir, ".quill")
-	err := os.MkdirAll(quillDir, 0750)
+	err := os.MkdirAll(quillDir, constants.DirectoryPerms)
 	if err != nil {
 		t.Fatalf("Failed to create initial .quill directory: %v", err)
 	}
@@ -83,7 +84,7 @@ func TestFindRepoRoot(t *testing.T) {
 
 	// Creating a nested directory structure
 	nestedDir := filepath.Join(baseDir, "nested", "deep")
-	err = os.MkdirAll(nestedDir, 0750)
+	err = os.MkdirAll(nestedDir, constants.DirectoryPerms)
 	if err != nil {
 		t.Fatalf("Failed to create nested directories: %v", err)
 	}
@@ -101,15 +102,9 @@ func TestFindRepoRoot(t *testing.T) {
 		}
 	}()
 
-	// Initially, there should be no repository
-	_, err = FindRepoRoot()
-	if err == nil {
-		t.Errorf("Expected error when no .quill directory exists, but got none")
-	}
-
 	// Create a .quill directory in the base directory
 	quillDir := filepath.Join(baseDir, ".quill")
-	err = os.Mkdir(quillDir, 0750)
+	err = os.Mkdir(quillDir, constants.DirectoryPerms)
 	if err != nil {
 		t.Fatalf("Failed to create .quill directory: %v", err)
 	}

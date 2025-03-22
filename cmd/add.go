@@ -48,12 +48,14 @@ var addCmd = &cobra.Command{
 					if err != nil {
 						return err
 					}
+
 					if !info.IsDir() {
 						err = idx.AddFile(repoPath, path)
 						if err != nil {
 							return fmt.Errorf("failed to add %q: %v", path, err)
 						}
 					}
+
 					return nil
 				})
 				if err != nil {
