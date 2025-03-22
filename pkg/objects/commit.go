@@ -7,8 +7,10 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/tejastn10/quill/pkg/constants"
 	"github.com/tejastn10/quill/pkg/hash"
 	"github.com/tejastn10/quill/pkg/index"
+	"github.com/tejastn10/quill/pkg/repo"
 	"github.com/tejastn10/quill/pkg/storage"
 )
 
@@ -32,7 +34,13 @@ func CreateCommit(repoPath, message, author string) (string, error) {
 
 	// Read HEAD to find last commit
 	headRefPath := filepath.Join(repoPath, ".quill", "HEAD")
-	headBytes, err := os.ReadFile(headRefPath)
+
+	cleanPath := filepath.Clean(headRefPath)
+
+	if !repo.IsPathSafe(cleanPath) {
+		return "", fmt.Errorf("invalid file path: potential directory traversal attempt")
+	}
+	headBytes, err := os.ReadFile(cleanPath)
 
 	var parentHash string
 	if err == nil {
@@ -70,7 +78,7 @@ func CreateCommit(repoPath, message, author string) (string, error) {
 	}
 
 	// Update HEAD
-	err = os.WriteFile(headRefPath, []byte(commit.Hash), 0644)
+	err = os.WriteFile(headRefPath, []byte(commit.Hash), constants.ConfigFilePerms)
 	if err != nil {
 		return "", fmt.Errorf("failed to update HEAD: %w", err)
 	}
